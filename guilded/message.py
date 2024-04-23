@@ -788,20 +788,26 @@ class ChatMessage(Hashable, HasContentMixin):
         """
 
         coro = self._state.delete_channel_message(self.channel_id, self.id)
-
+        await asyncio.sleep(0.5)
         if delay is not None:
 
             async def delete(delay: float):
                 await asyncio.sleep(delay)
                 try:
-                    await coro
+                    try:
+                        await coro
+                    except:
+                        await coro
                 except HTTPException:
                     pass
 
             asyncio.create_task(delete(delay))
 
         else:
-            await coro
+            try:
+                await coro
+            except:
+                await coro
 
     async def edit(
         self,
@@ -857,13 +863,19 @@ class ChatMessage(Hashable, HasContentMixin):
             embeds=embeds,
             hide_preview_urls=hide_preview_urls,
         )
-
-        data = await self._state.update_channel_message(
-            self.channel_id,
-            self.id,
-            payload=params.payload,
-        )
-
+        await asyncio.sleep(0.5)
+        try: 
+            data = await self._state.update_channel_message(
+                self.channel_id,
+                self.id,
+                payload=params.payload,
+            )
+        except:
+            data = await self._state.update_channel_message(
+                self.channel_id,
+                self.id,
+                payload=params.payload,
+            )
         message = self._state.create_message(
             data=data['message'],
             channel=self.channel,
@@ -882,7 +894,11 @@ class ChatMessage(Hashable, HasContentMixin):
             The emote to add.
         """
         emote_id: int = getattr(emote, 'id', emote)
-        await self._state.add_channel_message_reaction(self.channel_id, self.id, emote_id)
+        await asyncio.sleep(0.5)
+        try:
+            await self._state.add_channel_message_reaction(self.channel_id, self.id, emote_id)
+        except:
+            await self._state.add_channel_message_reaction(self.channel_id, self.id, emote_id)
 
     async def remove_reaction(self, emote: Emote, member: Optional[abc_User] = None) -> None:
         """|coro|
@@ -902,7 +918,11 @@ class ChatMessage(Hashable, HasContentMixin):
             If this is not specified, the client's reaction will be removed instead.
         """
         emote_id: int = getattr(emote, 'id', emote)
-        await self._state.remove_channel_message_reaction(self.channel.id, self.id, emote_id, member.id if member else None)
+        await asyncio.sleep(0.5)
+        try:
+            await self._state.remove_channel_message_reaction(self.channel.id, self.id, emote_id, member.id if member else None)
+        except:
+            await self._state.remove_channel_message_reaction(self.channel.id, self.id, emote_id, member.id if member else None)
 
     async def remove_self_reaction(self, emote: Emote, /) -> None:
         """|coro|
@@ -934,7 +954,11 @@ class ChatMessage(Hashable, HasContentMixin):
             The emote to remove.
         """
         emote_id: int = getattr(emote, 'id', emote)
-        await self._state.remove_channel_message_reactions(self.channel.id, self.id, emote_id)
+        await asyncio.sleep(0.5)
+        try:
+            await self._state.remove_channel_message_reactions(self.channel.id, self.id, emote_id)
+        except:
+            await self._state.remove_channel_message_reactions(self.channel.id, self.id, emote_id)
 
     async def clear_reactions(self) -> None:
         """|coro|
@@ -970,18 +994,31 @@ class ChatMessage(Hashable, HasContentMixin):
             # We don't have a say in where the message appears in the reply
             # list unfortunately; it is always sorted chronologically.
             reply_to.append(self)
-
-        return await self.channel.send(
-            content=content,
-            embed=embed,
-            embeds=embeds,
-            reference=reference,
-            reply_to=reply_to,
-            mention_author=mention_author,
-            silent=silent,
-            private=private,
-            delete_after=delete_after,
-        )
+        await asyncio.sleep(0.5)
+        try:
+            return await self.channel.send(
+                content=content,
+                embed=embed,
+                embeds=embeds,
+                reference=reference,
+                reply_to=reply_to,
+                mention_author=mention_author,
+                silent=silent,
+                private=private,
+                delete_after=delete_after,
+            )
+        except:
+            return await self.channel.send(
+                content=content,
+                embed=embed,
+                embeds=embeds,
+                reference=reference,
+                reply_to=reply_to,
+                mention_author=mention_author,
+                silent=silent,
+                private=private,
+                delete_after=delete_after,
+            )
 
     async def create_thread(self, name: str, *, visibility: ChannelVisibility = None) -> Thread:
         """|coro|
@@ -1033,7 +1070,11 @@ class ChatMessage(Hashable, HasContentMixin):
         HTTPException
             Failed to create a thread.
         """
-        return await self.channel.create_thread(name=name, message=self, visibility=visibility)
+        await asyncio.sleep(0.5)
+        try:
+            return await self.channel.create_thread(name=name, message=self, visibility=visibility)
+        except:
+            return await self.channel.create_thread(name=name, message=self, visibility=visibility)
 
     async def pin(self) -> None:
         """|coro|
@@ -1051,7 +1092,11 @@ class ChatMessage(Hashable, HasContentMixin):
         HTTPException
             Failed to pin the message.
         """
-        await self._state.pin_channel_message(self.channel.id, self.id)
+        await asyncio.sleep(0.5)
+        try:
+            await self._state.pin_channel_message(self.channel.id, self.id)
+        except:
+            await self._state.pin_channel_message(self.channel.id, self.id)
 
     async def unpin(self) -> None:
         """|coro|
@@ -1069,6 +1114,10 @@ class ChatMessage(Hashable, HasContentMixin):
         HTTPException
             Failed to unpin the message.
         """
-        await self._state.unpin_channel_message(self.channel.id, self.id)
+        await asyncio.sleep(0.5)
+        try:
+            await self._state.unpin_channel_message(self.channel.id, self.id)
+        except:
+            await self._state.unpin_channel_message(self.channel.id, self.id)
 
 Message = ChatMessage
